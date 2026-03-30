@@ -135,15 +135,95 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/*
+ * Extract a signed 14-bit (int14) value from a UAVCAN DSDL bit-packed payload.
+ * Values are packed LSB-first with no padding between elements.
+ * @param data  Pointer to the raw CAN frame payload bytes
+ * @param index Zero-based index of the int14 value to extract
+ * @return      Sign-extended 16-bit representation of the int14 value
+ */
+static int16_t DroneCAN_ExtractInt14(const uint8_t *data, uint8_t index)
+{
+	uint32_t bit_offset = (uint32_t)index * 14u;
+	uint32_t byte_idx   = bit_offset >> 3u;
+	uint32_t bit_shift  = bit_offset & 7u;
+	uint32_t raw;
+
+	raw = (uint32_t)data[byte_idx] | ((uint32_t)data[byte_idx + 1u] << 8u);
+	if (bit_shift > 2u)
+	{
+		raw |= (uint32_t)data[byte_idx + 2u] << 16u;
+	}
+
+	raw >>= bit_shift;
+	raw &= 0x3FFFu;
+
+	if ((raw & 0x2000u) != 0u) /* sign-extend int14 to int16 */
+	{
+		raw |= 0xFFFFC000u;
+	}
+
+	return (int16_t)raw;
+}
+
+/*
+ * Process a DroneCAN ESC RawCommand frame for this ESC node.
+ * Extracts the int14 command at DRONECAN_ESC_INDEX and applies it
+ * to the active control loop (torque or speed).
+ * Sets CAN.RecieveStatus to trigger velocity feedback via CAN_Respond().
+ */
+static void DroneCAN_ESC_ProcessRawCommand(void)
+{
+	if (RxMessage0.DLC < 2u)
+	{
+		return;
+	}
+
+	/* Payload excludes the UAVCAN transfer tail byte at the end */
+	uint8_t num_cmds = (uint8_t)(((uint16_t)(RxMessage0.DLC - 1u) * 8u) / 14u);
+	if (DRONECAN_ESC_INDEX >= num_cmds)
+	{
+		return;
+	}
+
+	int16_t raw_cmd = DroneCAN_ExtractInt14((uint8_t *)&CAN.Receive, DRONECAN_ESC_INDEX);
+
+	if (Driver.ControlMode == TORQUE_CTRL_MODE)
+	{
+		TorqueCtrl.ExptTorque_Nm = (float)raw_cmd * TorqueCtrl.MaxTorque_Nm
+		                           / (float)DRONECAN_ESC_INT14_MAX;
+		Saturation_float(&TorqueCtrl.ExptTorque_Nm,
+		                  TorqueCtrl.MaxTorque_Nm, -TorqueCtrl.MaxTorque_Nm);
+	}
+	else
+	{
+		SpdLoop.ExptMecAngularSpeed_rad = (float)raw_cmd
+		                                  * SpdLoop.MaxExptMecAngularSpeed_rad
+		                                  / (float)DRONECAN_ESC_INT14_MAX;
+		Saturation_float(&SpdLoop.ExptMecAngularSpeed_rad,
+		                  SpdLoop.MaxExptMecAngularSpeed_rad,
+		                  -SpdLoop.MaxExptMecAngularSpeed_rad);
+	}
+
+	/* Trigger velocity status feedback via CAN_Respond() */
+	CAN.RecieveStatus = (0x40u + IDENTIFIER_READ_VEL);
+}
+
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {	
 	first_line:
 	
 	CAN_Receive(&CAN.StdID, &CAN.Identifier, &CAN.ReceiveData);
 	
+	/*DroneCAN ESC RawCommand (extended 29-bit ID frame)*/
+	if (RxMessage0.IDE == CAN_ID_EXT &&
+	    (RxMessage0.ExtId & DRONECAN_MSG_DTID_MASK) == DRONECAN_ESC_RAW_CMD_FILTER)
+	{
+		DroneCAN_ESC_ProcessRawCommand();
+	}
 	/*ACTION指令*/
 	/*点对点模�?*/
-	if (CAN.StdID == DRIVER_SERVER_CAN_ID)
+	else if (CAN.StdID == DRIVER_SERVER_CAN_ID)
 	{
 		switch(CAN.Identifier)
 		{
@@ -1014,6 +1094,27 @@ void CAN_Enable(void)
 	{
 		Error_Handler();
 	}
+
+	/* Filter bank 1: 32-bit mask mode for DroneCAN ESC RawCommand (extended ID) */
+	/* Matches any broadcast frame with DTID=1030 (0x406) and service bit=0     */
+	CAN_FilterTypeDef CAN1_FilterDroneCAN = {0};
+	CAN1_FilterDroneCAN.FilterBank           = 1;
+	CAN1_FilterDroneCAN.FilterMode           = CAN_FILTERMODE_IDMASK;
+	CAN1_FilterDroneCAN.FilterScale          = CAN_FILTERSCALE_32BIT;
+	CAN1_FilterDroneCAN.FilterActivation     = ENABLE;
+	CAN1_FilterDroneCAN.SlaveStartFilterBank = 14;
+	CAN1_FilterDroneCAN.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+	/* FilterId = (DRONECAN_ESC_RAW_CMD_FILTER << 3) | CAN_ID_EXT = 0x00203004 */
+	CAN1_FilterDroneCAN.FilterIdHigh         = 0x0020u;
+	CAN1_FilterDroneCAN.FilterIdLow          = 0x3004u;
+	/* FilterMask = (DRONECAN_MSG_DTID_MASK << 3) | CAN_ID_EXT = 0x07FFFC04   */
+	CAN1_FilterDroneCAN.FilterMaskIdHigh     = 0x07FFu;
+	CAN1_FilterDroneCAN.FilterMaskIdLow      = 0xFC04u;
+	if (HAL_CAN_ConfigFilter(&hcan1, &CAN1_FilterDroneCAN) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
 	HAL_CAN_Start(&hcan1);
 	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_LAST_ERROR_CODE);

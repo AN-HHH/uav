@@ -101,6 +101,17 @@ extern CAN_HandleTypeDef hcan1;
 #define IDENTIFIER_HALL_TEST_ON      0x32
 #define IDENTIFIER_HALL_TEST_OFF     0x33
 
+/* DroneCAN ESC RawCommand definitions (UAVCAN v0 / DroneCAN) */
+/* Data Type ID for uavcan.equipment.esc.RawCommand */
+#define DRONECAN_ESC_RAW_CMD_DTID     1030u
+/* Mask for bits [23:7] of extended CAN ID: covers DTID field and S/M flag */
+#define DRONECAN_MSG_DTID_MASK        0x00FFFF80u
+/* Expected value of masked bits for ESC RawCommand broadcast messages */
+#define DRONECAN_ESC_RAW_CMD_FILTER   ((uint32_t)(DRONECAN_ESC_RAW_CMD_DTID) << 8u)
+/* 0-based ESC index in the RawCommand cmd array (CAN_ID_NUM is 1-based) */
+#define DRONECAN_ESC_INDEX            ((uint8_t)((CAN_ID_NUM) - 1u))
+/* Maximum magnitude of UAVCAN int14 ESC command value */
+#define DRONECAN_ESC_INT14_MAX        8191
 
 
 typedef union
