@@ -1,0 +1,6 @@
+# Test executables
+tests/test_uavcan_esc
+tests/test_can_bridge
+
+# Firmware build artefacts
+firmware/build/
