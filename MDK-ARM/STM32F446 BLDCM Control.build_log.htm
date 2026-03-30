@@ -1,0 +1,407 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.27.0.0
+Copyright (C) 2018 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Aser Mathew, long, LIC=03C6R-KJ806-QDUKD-8FI9A-8JHCU-D564J
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.27.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.11
+Assembler:       Armasm.exe V6.11
+Linker/Locator:  ArmLink.exe V6.11
+Library Manager: ArmAr.exe V6.11
+Hex Converter:   FromElf.exe V6.11
+CPU DLL:         SARMCM3.DLL V5.27.0.0
+Dialog DLL:      DCM.DLL V1.17.2.0
+Target DLL:      Segger\JL2CM3.dll V2.99.15.0
+Dialog DLL:      TCM.DLL V1.36.1.0
+ 
+<h2>Project:</h2>
+D:\code\2022DRIVER\MDK-ARM\STM32F446 BLDCM Control.uvprojx
+Project File Date:  03/17/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.11', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'STM32F446 BLDCM Control'
+../Src/util.c(1): error: 'util.h' file not found
+#include "util.h"
+         ^~~~~~~~
+1 error generated.
+compiling util.c...
+../Src/can.c(21): error: 'can.h' file not found
+#include "can.h"
+         ^~~~~~~
+1 error generated.
+compiling can.c...
+../Src/spi.c(21): error: 'spi.h' file not found
+#include "spi.h"
+         ^~~~~~~
+1 error generated.
+compiling spi.c...
+../Src/adc.c(21): error: 'adc.h' file not found
+#include "adc.h"
+         ^~~~~~~
+1 error generated.
+compiling adc.c...
+../Src/main.c(41): error: 'main.h' file not found
+#include "main.h"
+         ^~~~~~~~
+1 error generated.
+compiling main.c...
+../Src/dma.c(21): error: 'dma.h' file not found
+#include "dma.h"
+         ^~~~~~~
+1 error generated.
+compiling dma.c...
+../Src/gpio.c(21): error: 'gpio.h' file not found
+#include "gpio.h"
+         ^~~~~~~~
+1 error generated.
+compiling gpio.c...
+../Src/tim.c(21): error: 'tim.h' file not found
+#include "tim.h"
+         ^~~~~~~
+1 error generated.
+compiling tim.c...
+../Src/stm32f4xx_it.c(37): error: 'main.h' file not found
+#include "main.h"
+         ^~~~~~~~
+1 error generated.
+compiling stm32f4xx_it.c...
+../Src/usart.c(21): error: 'usart.h' file not found
+#include "usart.h"
+         ^~~~~~~~~
+1 error generated.
+compiling usart.c...
+../Src/MotorConfig.c(16): error: 'MotorConfig.h' file not found
+#include "MotorConfig.h"
+         ^~~~~~~~~~~~~~~
+1 error generated.
+compiling MotorConfig.c...
+../Src/AngleTable.c(16): error: 'AngleTable.h' file not found
+#include "AngleTable.h"
+         ^~~~~~~~~~~~~~
+1 error generated.
+compiling AngleTable.c...
+../Src/stm32f4xx_hal_msp.c(43): error: 'main.h' file not found
+#include "main.h"
+         ^~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_msp.c...
+../Src/foc.c(16): error: 'foc.h' file not found
+#include "foc.h"
+         ^~~~~~~
+1 error generated.
+compiling foc.c...
+../Src/control.c(16): error: 'control.h' file not found
+#include "control.h"
+         ^~~~~~~~~~~
+1 error generated.
+compiling control.c...
+../Src/GateDriver.c(17): error: 'GateDriver.h' file not found
+#include "GateDriver.h"
+         ^~~~~~~~~~~~~~
+1 error generated.
+compiling GateDriver.c...
+../Src/PositionSensor.c(16): error: 'PositionSensor.h' file not found
+#include "PositionSensor.h"
+         ^~~~~~~~~~~~~~~~~~
+1 error generated.
+compiling PositionSensor.c...
+../Src/identify.c(16): error: 'identify.h' file not found
+#include "identify.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling identify.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_init_f32.c(42): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_init_f32.c...
+../Src/observer.c(16): error: 'observer.h' file not found
+#include "observer.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling observer.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_init_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_init_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_reset_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_reset_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_init_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_init_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_reset_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_reset_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_pid_reset_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_pid_reset_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_sin_cos_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sin_cos_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_cos_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_cos_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_cos_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_cos_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_cos_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_cos_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/ControllerFunctions/arm_sin_cos_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sin_cos_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_sin_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sin_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_sin_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sin_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_sqrt_q31.c(40): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sqrt_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_sqrt_q15.c(40): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sqrt_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/FastMathFunctions/arm_sin_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_sin_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/CommonTables/arm_common_tables.c(42): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_common_tables.c...
+../Drivers/CMSIS/DSP_Lib/Source/CommonTables/arm_const_structs.c(43): error: 'arm_const_structs.h' file not found
+#include "arm_const_structs.h"
+         ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+compiling arm_const_structs.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_max_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_max_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_max_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_max_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_max_q7.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_max_q7.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_max_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_max_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_mean_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_mean_f32.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_mean_q7.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_mean_q7.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_mean_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_mean_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_min_q15.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_min_q15.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_min_q7.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_min_q7.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_mean_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_mean_q31.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_min_f32.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_min_f32.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c(249): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_adc.c...
+../Drivers/CMSIS/DSP_Lib/Source/StatisticsFunctions/arm_min_q31.c(41): error: 'arm_math.h' file not found
+#include "arm_math.h"
+         ^~~~~~~~~~~~
+1 error generated.
+compiling arm_min_q31.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c(87): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_adc_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c(69): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_rcc.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c(25): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_rcc_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c(78): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_flash.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c(108): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_gpio.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c(64): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_flash_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c(49): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_flash_ramfunc.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c(98): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_dma.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c(40): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_dma_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c(26): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_pwr.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c(25): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_pwr_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c(83): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_cortex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c(36): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c(87): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_exti.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c(20): error: 'stm32f4xx_ll_utils.h' file not found
+#include "stm32f4xx_ll_utils.h"
+         ^~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_ll_utils.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c(213): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_can.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c(202): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_spi.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c(219): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_uart.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c(78): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_tim_ex.c...
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c(186): error: 'stm32f4xx_hal.h' file not found
+#include "stm32f4xx_hal.h"
+         ^~~~~~~~~~~~~~~~~
+1 error generated.
+compiling stm32f4xx_hal_tim.c...
+".\STM32F446 BLDCM Control.axf" - 70 Error(s), 0 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.13.0.pack
+                Keil.STM32F4xx_DFP.2.13.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_STM32F446_BLDCM_Control
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+Target not created.
+Build Time Elapsed:  00:00:17
+</pre>
+</body>
+</html>
