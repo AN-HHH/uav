@@ -1023,7 +1023,8 @@ void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint
 {
 	uint32_t absData = abs(transmitData);
 	
-	TxMessage.StdId = StdId;
+	TxMessage.IDE   = CAN_ID_EXT;  // 改为扩展帧
+  TxMessage.ExtId = StdId;       // 使用 ExtId
 	TxMessage.ExtId = 0u;
 	TxMessage.IDE   = CAN_ID_STD;
 	TxMessage.RTR   = CAN_RTR_DATA;
@@ -1107,7 +1108,7 @@ void CAN_Enable(void)
     /* 原有配置保持 */
     CAN1_FilerConf.FilterBank = 0;
     CAN1_FilerConf.FilterMode = CAN_FILTERMODE_IDLIST;
-    CAN1_FilerConf.FilterScale = CAN_FILTERSCALE_16BIT;
+    CAN1_FilerConf.FilterScale = CAN_FILTERSCALE_32BIT;
     CAN1_FilerConf.FilterActivation = ENABLE;
     CAN1_FilerConf.SlaveStartFilterBank = 14;
     
