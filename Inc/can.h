@@ -40,6 +40,14 @@ extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
 
+/* DroneCAN ESC RawCommand 消息定义 */
+#define DRONECAN_ESC_RAWCMD_CANID_BASE  0x060   /* DroneCAN ESC RawCommand CAN ID基址 */
+#define DRONECAN_DATA_TYPE_MASK         0x1F    /* DroneCAN数据类型掩码 */
+/* 识别DroneCAN消息格式的标志 */
+#define IS_DRONECAN_ESC_CMD(canid)      (((canid & 0xFF00) >> 8) == DRONECAN_ESC_RAWCMD_CANID_BASE)
+
+
+
 #define DRIVER_CLIENT_BASE_ID		0x280
 #define DRIVER_SERVER_BASE_ID		0x300
 
@@ -101,6 +109,12 @@ extern CAN_HandleTypeDef hcan1;
 #define IDENTIFIER_HALL_TEST_ON      0x32
 #define IDENTIFIER_HALL_TEST_OFF     0x33
 
+/* DroneCAN ESC RawCommand PWM数据缓冲 */
+typedef struct {
+    uint16_t pwm_values[8];      /* 最多支持8个电机的PWM值 */
+    uint8_t motor_count;          /* 实际电机数量 */
+    uint8_t data_valid;           /* 数据有效标志 */
+} DroneCAN_ESC_RawCmd_t;
 
 
 typedef union
@@ -120,6 +134,11 @@ struct CAN_t
 	int32_t TransmitData;
 	CAN_Data_t Receive;
 	CAN_Data_t Transmit;
+	
+	
+//	/* 新增：DroneCAN支持 */
+//    uint8_t MessageType;              /* 消息类型：0=自定义协议, 1=DroneCAN */
+//    DroneCAN_ESC_RawCmd_t ESC_RawCmd; /* DroneCAN ESC RawCommand数据 */
 };
 
 /* USER CODE END Private defines */
@@ -132,6 +151,17 @@ void CAN_Respond(void);
 void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint32_t StdId);
 void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData);
 void CAN_Enable(void);
+
+
+/* DroneCAN消息处理函数 */
+
+//uint8_t DRONECAN_ParseRawCommand(uint8_t *data, uint8_t dlc, DroneCAN_ESC_RawCmd_t *cmd);
+//void DRONECAN_ProcessESCCommand(DroneCAN_ESC_RawCmd_t *cmd);
+//uint32_t DRONECAN_GetCanID(uint8_t msg_type, uint8_t node_id);
+//DRONECAN_ParseRawCommand()负责解析多字节PWM数据
+//DRONECAN_ProcessESCCommand()负责执行电机命令
+//DRONECAN_GetCanID()用于计算或验证DroneCAN CAN ID
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
