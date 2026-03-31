@@ -143,6 +143,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	
 	
 	/*ACTION指令*/
+
 	/*点对点模�?*/
 	
  if (CAN.StdID == DRIVER_SERVER_CAN_ID)
@@ -1055,7 +1056,7 @@ void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint
 }
 
 
-void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)
+void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)	
 {	
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage0, (uint8_t *)&CAN.Receive);
     
@@ -1072,7 +1073,8 @@ void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)
                           ((int32_t)CAN.Receive.data_uint8[2] << 16) |
                           ((int32_t)CAN.Receive.data_uint8[1] << 8) |
                           ((int32_t)CAN.Receive.data_uint8[0]);
-        
+        // 直接解析为32位有符号整数，自动处理负数（补码）
+			
         /* 范围缩放：-8000~8000 映射到 -2000~2000 */
         *receiveData = (pwm_raw * 250) / 1000;  /* ÷4 等价于 ×250÷1000 */
     }
@@ -1084,7 +1086,10 @@ void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)
         if(((CAN.Receive.data_uint8[3]&0x80)>>7) == 0)
         {
             /*数据为正数*/
-            *receiveData = (int32_t)((CAN.Receive.data_uint8[3]<<16) | (CAN.Receive.data_uint8[2]<<8) | (CAN.Receive.data_uint8[1]<<0));
+            // 应该是✅
+        *receiveData = (int32_t)(((int32_t)CAN.Receive.data_uint8[3]<<16) | 
+                         ((int32_t)CAN.Receive.data_uint8[2]<<8) | 
+                         ((int32_t)CAN.Receive.data_uint8[1]<<0));
         }
         else if(((CAN.Receive.data_uint8[3]&0x80)>>7) == 1)
         {
