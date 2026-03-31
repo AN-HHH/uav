@@ -1025,8 +1025,6 @@ void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint
 	
 	TxMessage.IDE   = CAN_ID_EXT;  // 改为扩展帧
   TxMessage.ExtId = StdId;       // 使用 ExtId
-	TxMessage.ExtId = 0u;
-	TxMessage.IDE   = CAN_ID_STD;
 	TxMessage.RTR   = CAN_RTR_DATA;
 	TxMessage.DLC   = length;
 	
@@ -1061,10 +1059,10 @@ void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)
 {	
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage0, (uint8_t *)&CAN.Receive);
     
-    *stdId = RxMessage0.StdId;
+    *stdId = RxMessage0.ExtId;
     
     /* 🔧 修改：识别是否为DroneCAN消息 */
-    if (IS_DRONECAN_ESC_CMD(RxMessage0.StdId))
+    if (IS_DRONECAN_ESC_CMD(RxMessage0.ExtId))
     {
         /* DroneCAN格式：第一个PWM值从字节0-3 */
         *identifier = IDENTIFIER_VEL_CTRL;  /* 👈 标准化为速度控制命令 */
@@ -1107,16 +1105,16 @@ void CAN_Enable(void)
     
     /* 原有配置保持 */
     CAN1_FilerConf.FilterBank = 0;
-    CAN1_FilerConf.FilterMode = CAN_FILTERMODE_IDLIST;
+    CAN1_FilerConf.FilterMode = CAN_FILTERMODE_IDMASK;
     CAN1_FilerConf.FilterScale = CAN_FILTERSCALE_32BIT;
     CAN1_FilerConf.FilterActivation = ENABLE;
     CAN1_FilerConf.SlaveStartFilterBank = 14;
     
     /* 保持原有的自定义协议ID */
-    CAN1_FilerConf.FilterIdHigh = DRIVER_SERVER_CAN_ID << 5;
-    CAN1_FilerConf.FilterIdLow = DRIVER_SERVER_CAN_ID << 5;
-    CAN1_FilerConf.FilterMaskIdHigh = DRIVER_BROADCAST_ID << 5;
-    CAN1_FilerConf.FilterMaskIdLow = DRIVER_BROADCAST_ID << 5;
+     CAN1_FilerConf.FilterIdHigh = (0x18EA0000 >> 13) & 0xFFFF;  // ✅ 修改：扩展帧ID高位
+     CAN1_FilerConf.FilterIdLow = ((0x18EA0000 >> 13) | 0x8000) & 0xFFFF;  // ✅ 修改：扩展帧ID低位，0x8000 表示扩展帧
+     CAN1_FilerConf.FilterMaskIdHigh = 0xFFFF;  // ✅ 修改：掩码高位
+     CAN1_FilerConf.FilterMaskIdLow = 0xFFF8;   // ✅ 修改：掩码低位（允许某些变化）
     
     /* 🔧 新增：添加DroneCAN ESC RawCommand ID */
     /* 方式1：如果只有一个DroneCAN ID，直接用FilterIdLow */
