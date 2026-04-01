@@ -139,7 +139,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {	
 	first_line:
 	
-	CAN_Receive(&CAN.StdID, &CAN.Identifier, &CAN.ReceiveData);
+   int32_t motor2_speed = 0;  /* 新增: 电机2速度变量 */
+   CAN_Receive(&CAN.StdID, &CAN.Identifier, &CAN.ReceiveData, &motor2_speed);
 	
 	
 	/*ACTION指令*/
@@ -1055,46 +1056,117 @@ void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint
 }
 
 
-void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData)	
+/**
+ * @brief 接收CAN消息 - 支持标准帧、扩展帧和DroneCAN双电机
+ * 
+ * 功能:
+ * - 区分标准帧(11位ID)和扩展帧(29位ID)
+ * - 识别DroneCAN ESC RawCommand消息
+ * - 提取两个16位PWM值(电机1和电机2)
+ * - 或解析自定义协议数据
+ * 
+ * @param stdId:      输出参数 - CAN ID
+ * @param identifier: 输出参数 - 消息标识符
+ * @param receiveData: 输出参数 - 接收数据(单电机模式时使用)
+ */
+void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData, int32_t *receiveData2)	
 {	
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage0, (uint8_t *)&CAN.Receive);
     
-    *stdId = RxMessage0.ExtId;
+    /* ✅ 第1步: 记录帧类型标志 */
+    CAN.IDE = RxMessage0.IDE;
     
-    /* 🔧 修改：识别是否为DroneCAN消息 */
-    if (IS_DRONECAN_ESC_CMD(RxMessage0.ExtId))
+    /* ✅ 第2步: 根据帧类型提取ID */
+    if (RxMessage0.IDE == CAN_ID_EXT)
     {
-        /* DroneCAN格式：第一个PWM值从字节0-3 */
-        *identifier = IDENTIFIER_VEL_CTRL;  /* 👈 标准化为速度控制命令 */
-        
-        /* 提取第一个4字节PWM值（小端格式） */
-        int32_t pwm_raw = ((int32_t)CAN.Receive.data_uint8[3] << 24) |
-                          ((int32_t)CAN.Receive.data_uint8[2] << 16) |
-                          ((int32_t)CAN.Receive.data_uint8[1] << 8) |
-                          ((int32_t)CAN.Receive.data_uint8[0]);
-        // 直接解析为32位有符号整数，自动处理负数（补码）
-			
-        /* 范围缩放：-8000~8000 映射到 -2000~2000 */
-        *receiveData = (pwm_raw * 250) / 1000;  /* ÷4 等价于 ×250÷1000 */
+        *stdId = RxMessage0.ExtId;
     }
     else
     {
-        /* 自定义协议格式：保持原有逻辑 */
+        *stdId = RxMessage0.StdId;
+    }
+    
+    /* ✅ 第3步: 识别DroneCAN ESC RawCommand消息 (扩展帧) */
+    if (RxMessage0.IDE == CAN_ID_EXT && IS_DRONECAN_ESC_CMD_ALT(RxMessage0.ExtId))
+{
+    /**
+     * DroneCAN RawCommand格式 (双电机):
+     * 每个PWM值占2字节(16位有符号整数),小端格式
+     * 范围: -8000~+8000 对应 -100%~+100%
+     * 
+     * CAN帧8字节数据布局:
+     * 字节 0-1: 电机1 PWM值 (int16_t, 小端)
+     * 字节 2-3: 电机2 PWM值 (int16_t, 小端)
+     * 字节 4-5: 电机3 PWM值 (预留)
+     * 字节 6-7: 电机4 PWM值 (预留)
+     */
+    
+    /* ✅ 第一个电机 (字节 0-1) - 小端格式 */
+    int16_t motor1_pwm = ((int16_t)CAN.Receive.data_uint8[1] << 8) |
+                         ((int16_t)CAN.Receive.data_uint8[0]);
+    
+    /* ✅ 第二个电机 (字节 2-3) - 小端格式 */
+    int16_t motor2_pwm = ((int16_t)CAN.Receive.data_uint8[3] << 8) |
+                         ((int16_t)CAN.Receive.data_uint8[2]);
+    
+    /* 存储到全局结构体 */
+    CAN.DualMotor.motor1_pwm = motor1_pwm;
+    CAN.DualMotor.motor2_pwm = motor2_pwm;
+    CAN.DualMotor.data_valid = 1;
+    
+    /* 
+     * PWM范围映射:
+     * DroneCAN:  -8000 ~ +8000
+     * 内部单位: -2000 ~ +2000
+     * 映射公式: output = (pwm_raw / 4)
+     */
+    
+    /* ✅ 同时返回两个电机的速度 */
+    *identifier = IDENTIFIER_VEL_CTRL;  /* 速度控制命令标识 */
+    *receiveData = (motor1_pwm / 4);    /* 电机1速度 (换算后) */
+    *receiveData2 = (motor2_pwm / 4);   /* 电机2速度 (换算后) */
+    
+    #ifdef DEBUG_DRONECAN
+    UART_Transmit_DMA("DroneCAN: ID=0x%lX, M1=%d, M2=%d\r\n", 
+                      RxMessage0.ExtId, motor1_pwm, motor2_pwm);
+    #endif
+}
+    /* 自定义协议(标准帧或扩展帧) */
+    else
+    {
+        /**
+         * 自定义协议格式:
+         * 字节0: 标识符(identifier)
+         * 字节1-3: 数据(有符号整数)
+         * 
+         * 符号位在字节3的bit7:
+         * 0 = 正数
+         * 1 = 负数
+         */
+        
         *identifier = CAN.Receive.data_uint8[0];
         
-        if(((CAN.Receive.data_uint8[3]&0x80)>>7) == 0)
+        if (((CAN.Receive.data_uint8[3] & 0x80) >> 7) == 0)
         {
-            /*数据为正数*/
-            // 应该是✅
-        *receiveData = (int32_t)(((int32_t)CAN.Receive.data_uint8[3]<<16) | 
-                         ((int32_t)CAN.Receive.data_uint8[2]<<8) | 
-                         ((int32_t)CAN.Receive.data_uint8[1]<<0));
+            /* ✅ 正数: 直接提取3字节数据 */
+            *receiveData = (int32_t)(
+                ((int32_t)CAN.Receive.data_uint8[3] << 16) | 
+                ((int32_t)CAN.Receive.data_uint8[2] << 8) | 
+                ((int32_t)CAN.Receive.data_uint8[1] << 0)
+            );
         }
-        else if(((CAN.Receive.data_uint8[3]&0x80)>>7) == 1)
+        else
         {
-            /*数据为负数*/
-            *receiveData = -(int32_t)(((CAN.Receive.data_uint8[3]&0x7F)<<16) | (CAN.Receive.data_uint8[2]<<8) | (CAN.Receive.data_uint8[1]<<0));
+            /* ✅ 负数: 提取数据并清除符号位,然后取反 */
+            *receiveData = -(int32_t)(
+                (((CAN.Receive.data_uint8[3] & 0x7F) << 16) | 
+                 (CAN.Receive.data_uint8[2] << 8) | 
+                 (CAN.Receive.data_uint8[1] << 0))
+            );
         }
+        
+        /* 清除DroneCAN数据有效标志 */
+        CAN.DualMotor.data_valid = 0;
     }
 }
 

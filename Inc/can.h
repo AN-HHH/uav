@@ -40,11 +40,31 @@ extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
 
-/* DroneCAN ESC RawCommand 消息定义 */
-#define DRONECAN_ESC_RAWCMD_CANID_BASE  0x18EA   /* DroneCAN ESC RawCommand CAN ID基址 */
-#define DRONECAN_DATA_TYPE_MASK         0x1F    /* DroneCAN数据类型掩码 */
-/* 识别DroneCAN消息格式的标志 */
-#define IS_DRONECAN_ESC_CMD(canid)       (((canid >> 16) & 0xFFFF) == DRONECAN_ESC_RAWCMD_CANID_BASE)
+/* ============ DroneCAN 29位ID格式定义 ============ */
+/* 
+ * DroneCAN 29位ID格式:
+ * Bit 28-26: Priority (3bits)     = 0x1 (001)
+ * Bit 25-21: DataType (5bits)     = 0x0E (ESC RawCommand)
+ * Bit 20-13: SourceNodeID (8bits) = varies
+ * Bit 12-5:  DestNodeID (8bits)   = varies
+ * Bit 4-0:   Reserved (5bits)     = 0x00
+ * 
+ * ESC RawCommand ID 范围: 0x18EA0000 ~ 0x18EAFFFF
+ */
+
+#define DRONECAN_DATA_TYPE_ESC_RAW_CMD      0x0E    /* 数据类型: ESC RawCommand */
+#define DRONECAN_PRIORITY_DEFAULT           0x01    /* 优先级: 高优先级 */
+#define DRONECAN_RESERVED_BITS              0x00    /* 保留位 */
+
+/* DroneCAN ESC RawCommand ID识别 - 检查数据类型字段 (bits 24-28) */
+#define IS_DRONECAN_ESC_CMD(canid) \
+    ((((canid) >> 24) & 0x1F) == (((DRONECAN_PRIORITY_DEFAULT << 4) | DRONECAN_DATA_TYPE_ESC_RAW_CMD) & 0x1F))
+
+/* 验证是否为有效DroneCAN ESC RawCommand ID (0x18EA0000-0x18EAFFFF) */
+#define DRONECAN_ESC_RAWCMD_ID_MASK         0xFFFF0000
+#define DRONECAN_ESC_RAWCMD_ID_VALUE        0x18EA0000
+#define IS_DRONECAN_ESC_CMD_ALT(canid) \
+    (((canid) & DRONECAN_ESC_RAWCMD_ID_MASK) == DRONECAN_ESC_RAWCMD_ID_VALUE)
 
 
 
@@ -116,6 +136,13 @@ typedef struct {
     uint8_t data_valid;           /* 数据有效标志 */
 } DroneCAN_ESC_RawCmd_t;
 
+/* 新增: 双电机PWM控制结构体 */
+typedef struct {
+    int16_t motor1_pwm;           /* 电机1 PWM值 (-8000~+8000) */
+    int16_t motor2_pwm;           /* 电机2 PWM值 (-8000~+8000) */
+    uint8_t data_valid;           /* 数据有效标志 */
+} DroneCAN_Dual_Motor_t;
+
 
 typedef union
 {
@@ -126,9 +153,10 @@ typedef union
 
  struct CAN_t
  {
-     uint32_t StdID;              // ✅ 保留标准ID
-     uint32_t ExtID;              // ✅ 新增：扩展帧ID
-     uint8_t IDE;                 // ✅ 新增：帧类型标志 (0=标准帧, 1=扩展帧)
+     uint32_t StdID;              // 标准ID (11位, 当IDE=0时使用)
+     uint32_t ExtID;              // 扩展帧ID (29位, 当IDE=1时使用)
+     uint8_t IDE;                 // 帧类型标志: 0=CAN_ID_STD(标准帧), 1=CAN_ID_EXT(扩展帧)
+                                 // ⚠️ 必须在CAN_Receive()中设置！
      uint32_t MailBox;
      uint8_t Identifier;
      int32_t ReceiveData;
@@ -136,6 +164,9 @@ typedef union
      int32_t TransmitData;
      CAN_Data_t Receive;
      CAN_Data_t Transmit;
+	 
+	   /* 新增: 双电机数据 */
+     DroneCAN_Dual_Motor_t DualMotor;  /* DroneCAN双电机PWM */
  };
 
 /* USER CODE END Private defines */
@@ -146,7 +177,7 @@ void MX_CAN1_Init(void);
 /* USER CODE BEGIN Prototypes */
 void CAN_Respond(void);
 void CAN_Transmit(uint8_t identifier, int32_t transmitData, uint8_t length, uint32_t StdId);
-void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData);
+void CAN_Receive(uint32_t *stdId, uint8_t *identifier, int32_t *receiveData, int32_t *receiveData2);
 void CAN_Enable(void);
 
 
